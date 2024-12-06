@@ -19,15 +19,7 @@ return new class extends Migration
             // ایجاد رابطه بین parent و child
             $table->foreign('parent')->references('id')->on('medical_specialties')->onDelete('cascade');
         });
-        // Create pivot table for many-to-many relationship
-        Schema::create('equipment_medical_specialty', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('equipment_id');
-            $table->unsignedBigInteger('medical_specialty_id');
-            $table->timestamps();        
-            $table->foreign('equipment_id')->references('id')->on('equipment')->onDelete('cascade');
-            $table->foreign('medical_specialty_id')->references('id')->on('medical_specialties')->onDelete('cascade');
-        });
+        
         
     }
 

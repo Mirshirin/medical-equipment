@@ -34,16 +34,17 @@ class WordPressController extends Controller
     // متد برای دریافت تجهیزات براساس برندها، کشورها و تخصص‌ها
     public function getEquipments()
     {
-
         // فرض کنید شناسه‌های برندها، کشورها و تخصص‌ها را از دیتابیس دریافت می‌کنید
         $brandIds = \App\Models\Brand::pluck('id')->toArray();
         $countryIds = \App\Models\Country::pluck('id')->toArray();
         $expertiseIds =  \App\Models\MedicalSpecialty::pluck('id')->toArray();
-        //dd($countryIds );
+       
         // دریافت تجهیزات از API
-        $equipments = $this->wordpressService->getEquipments($brandIds, $countryIds, $expertiseIds);
+        $this->wordpressService->getEquipments($brandIds, $countryIds, $expertiseIds);
+         // انتقال داده‌ها به Elasticsearch
+        //          $this->indexDataInElasticsearch();
+        return response()->json(['message' => 'equipments have been successfully fetched and saved.']);
 
-        return response()->json($equipments);
     }
     public function getEquipment(Request $request, $page = 1)
     {
@@ -60,7 +61,7 @@ class WordPressController extends Controller
         if ($response->successful()) {
             // دریافت داده‌ها
             $equipments = $response->json();
-    //dd( $equipments);
+        //dd( $equipments);
             // دریافت تعداد کل تجهیزات برای صفحه‌بندی
             $total = $response->header('X-WP-Total');  // تعداد کل نتایج
             $totalPages = ceil($total / $perPage);  // محاسبه تعداد صفحات
@@ -71,46 +72,7 @@ class WordPressController extends Controller
             return response()->json(['error' => 'Unable to fetch equipment data'], 500);
         }
     }
-    // public function fetchEquipmentData()
-    // {
-    //     dd('tttttttttttttt');
-    //     $url = "http://equipment.ir/wp-json/wp/v2/equipment";
-    
-    //     // ارسال درخواست GET به API
-    //     $response = Http::get($url);
-    
-    //     // چک کردن وضعیت پاسخ
-    //     if ($response->successful()) {
-    //         $data = $response->json(); // تبدیل پاسخ JSON به آرایه
-    
-    //         // ذخیره اطلاعات در مدل (اگر داده‌ها موجود باشند)
-    //         foreach ($data as $item) {
-    //             $newId = Equipment::max('equipment_id') + 1;
-    //             Equipment::updateOrCreate(
-    //                 [  'equipment_id' => $newId], 
-    //                 [
-    //                     'id' => $item['id'], 
-    //                     'date' => $item['date'],
-    //                     'link' => $item['link'],                 
-    //                     'type' => $item['type'],
-    //                     'brand' => $item['brand'],
-    //                     'medical-specialties' => $item['medical-specialties'],
-    //                     'country' => $item['country'],
-    //                     'acf' => $item['acf'],
-    //                     'status' => $item['status'],
-
-    //                     // سایر فیلدها بر اساس ساختار داده‌های شما
-    //                 ]
-    //             );
-    //         }
-
-    //          // انتقال داده‌ها به Elasticsearch
-    //          $this->indexDataInElasticsearch();
-    //     } else {
-    //         // مدیریت خطا در صورت عدم موفقیت
-    //         return response()->json(['error' => 'Failed to fetch data'], 500);
-    //     }
-    // }
+  
     public function getSpecialty($termId)
     {
         // WordPress API endpoint for the specific term

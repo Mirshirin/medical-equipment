@@ -10,8 +10,9 @@ class Country extends Model
     // فیلدهایی که می‌توانند به‌طور انبوه پر شوند
     protected $fillable = ['id','name'];
     // Many-to-many relationship with Equipment
-    public function equipments()
-    {
-        return $this->belongsToMany(Equipment::class);
-    }
+   // رابطه many-to-many با تجهیزات
+   public function equipments()
+   {
+       return $this->belongsToMany(Equipment::class, 'equipment_country', 'country_id', 'equipment_id');
+   }
 }

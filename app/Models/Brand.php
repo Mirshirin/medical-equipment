@@ -13,6 +13,6 @@ class Brand extends Model
     // Many-to-many relationship with Equipment
     public function equipments()
     {
-        return $this->belongsToMany(Equipment::class);
+        return $this->belongsToMany(Equipment::class, 'equipment_brand', 'brand_id', 'equipment_id');
     }
 }
