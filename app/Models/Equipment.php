@@ -12,11 +12,11 @@ class Equipment extends Model
     protected $table = 'equipment';
 
     // فیلدهایی که می‌توانند به‌طور انبوه پر شوند
-    protected $fillable = ['equipment_id','acf','country','medical-specialties','brand','type','link','date','status','id'];
-
+    //protected $fillable = ['equipment_id','acf','country','medical-specialties','brand','type','link','date','status','id'];
+    protected $fillable = ['id','status','date','type','equipment_name','device_model','brand','medical-specialties','country','supplier_company','supplier_kind','history_working',];
     public function medicalSpecialties()
     {
-        return $this->belongsToMany(MedicalSpecialty::class);
+        return $this->belongsToMany(MedicalSpecialty::class, 'equipment_medical_specialty', 'equipment_id', 'medical_specialty_id');
     }
     public function brands()
     {

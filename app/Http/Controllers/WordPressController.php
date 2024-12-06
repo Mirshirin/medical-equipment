@@ -34,11 +34,12 @@ class WordPressController extends Controller
     // متد برای دریافت تجهیزات براساس برندها، کشورها و تخصص‌ها
     public function getEquipments()
     {
-        // فرض کنید شناسه‌های برندها، کشورها و تخصص‌ها را از دیتابیس دریافت می‌کنید
-        $brandIds = [1, 2, 3];  // شناسه‌های برند
-        $countryIds = [1, 2];  // شناسه‌های کشور
-        $expertiseIds = [1, 3];  // شناسه‌های تخصص
 
+        // فرض کنید شناسه‌های برندها، کشورها و تخصص‌ها را از دیتابیس دریافت می‌کنید
+        $brandIds = \App\Models\Brand::pluck('id')->toArray();
+        $countryIds = \App\Models\Country::pluck('id')->toArray();
+        $expertiseIds =  \App\Models\MedicalSpecialty::pluck('id')->toArray();
+        //dd($countryIds );
         // دریافت تجهیزات از API
         $equipments = $this->wordpressService->getEquipments($brandIds, $countryIds, $expertiseIds);
 
@@ -59,7 +60,7 @@ class WordPressController extends Controller
         if ($response->successful()) {
             // دریافت داده‌ها
             $equipments = $response->json();
-    dd( $equipments);
+    //dd( $equipments);
             // دریافت تعداد کل تجهیزات برای صفحه‌بندی
             $total = $response->header('X-WP-Total');  // تعداد کل نتایج
             $totalPages = ceil($total / $perPage);  // محاسبه تعداد صفحات

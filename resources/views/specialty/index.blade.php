@@ -28,7 +28,6 @@
                 <th>وضعیت</th>
                 <th>تاریخ انتشار</th>
                 <th>نوع</th>
-                <th>لینک</th>
 
                  <!-- استخراج نام ستون‌ها از ACF -->
                  @php
@@ -62,6 +61,8 @@
                         @endforeach
                     @endif
                 @endforeach
+                <th>لینک</th>
+
             </tr>
 
         </thead>
@@ -73,28 +74,33 @@
                     <td>{{ $data['status'] }}</td>
                     <td>{{ $data['date'] }}</td>
                     <td>{{ $data['type'] }}</td>
-                    <td><a href="{{ $data['link'] }}" target="_blank">{{ $data['link'] }}</a></td>
 
                     <!-- نمایش داده‌های ACF -->
                    @if(!empty($data['acf']))
                         @foreach($data['acf'] as $key => $value)
-                            @if(!is_array($value))  
-                                <td>{{ $value }}</td>
-                            @else   
-                                @foreach($value as $subValue)    
-                                    @if(!is_array($subValue))    
-                                        <td>{{ $subValue }}</td> 
-                                    @elseif(is_array($subValue))
+                            
+                            @if(is_array($value))
+                                @foreach($value as $subkey => $subValue )
+                                    @if(is_array($subValue))
                                         @foreach($subValue as $innerKey => $innerValue)
-                                            <td>{{ $innerValue }}</td>
-                                        @endforeach                                       
+                                            <!-- Display inner values -->
+                                            @foreach($subValue as $innerKey => $innerValue)
+                                            <!-- Display inner values -->
+                                                <td>{{ $innerValue}}</td>
+                                            @endforeach
+                                         @endforeach
+                                    @else
+                                            <td>{{$subValue }}</td>
                                     @endif
-                                @endforeach                            
-                            @endif 
+                                @endforeach
+                            @else
+                                <td>{{ $value }}</td>
+                            @endif
                         @endforeach
                     @endif
                     
-                    
+                    <td><a href="{{ $data['link'] }}" target="_blank">{{ $data['link'] }}</a></td>
+  
                 </tr>
                 
             @endforeach

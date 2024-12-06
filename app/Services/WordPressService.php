@@ -5,6 +5,7 @@ use App\Models\Brand;
 use App\Models\Country;
 use App\Models\Expertise;
 use App\Models\MedicalSpecialty;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
 class WordPressService
@@ -34,7 +35,42 @@ class WordPressService
                     );
                 }
             }
-       
+            // دخیره تخصص ها
+            $medicalSpecialties  = $this->getPagedDataFromApi('medical-specialties');
+            foreach ($medicalSpecialties  as $medicalSpecialty) {
+                if (isset($medicalSpecialty['parent']) && $medicalSpecialty['parent'] == 0) {
+                    MedicalSpecialty::updateOrCreate(
+                        ['id' => $medicalSpecialty['id']],  
+                        [
+                            'name' => $medicalSpecialty['name'],
+                            'parent' => $medicalSpecialty['parent']
+                        ]
+                    );
+                } else {
+                    // Handle case where 'parent' is not set or is null
+                    MedicalSpecialty::updateOrCreate(
+                        ['id' => $medicalSpecialty['id']],  
+                        ['name' => $medicalSpecialty['name']]
+                    );
+                }
+            }
+            foreach ($medicalSpecialties as $medicalSpecialty) {
+                if (isset($medicalSpecialty['id']) && isset($medicalSpecialty['name'])) {
+                    // پیدا کردن رکورد با parent_id
+                    $medicalSpecialtyRecord = MedicalSpecialty::where('id', $medicalSpecialty['id'])->first(); 
+                    
+                    if ($medicalSpecialtyRecord) {
+                        // بروزرسانی parent_id با مقدار جدید
+                        $medicalSpecialtyRecord->update([
+                            'parent' => $medicalSpecialty['parent'] // به روزرسانی parent_id
+                        ]);
+                    } else {
+                        // اگر رکورد پیدا نشد
+                        Log::error("Medical Specialty with ID {$medicalSpecialty['id']} not found.");
+                    }
+                }
+            }
+           
             return response()->json(['message' => 'Data saved successfully']);
 
         } catch (\Exception $e) {
@@ -61,7 +97,7 @@ class WordPressService
 
             $data = $response->json();
             $allData = array_merge($allData, $data);
-
+                //dd($allData );
             // بررسی اینکه آیا صفحات بیشتری وجود دارند
             $totalPages = $response->header('X-WP-TotalPages');
             $page++;
@@ -98,10 +134,6 @@ class WordPressService
 //                 );
 //             }
 //         }
-
-        
-//       //dd($allData);
-   
 //         // ذخیره کشورها
 //         foreach ($allData as $country) {
 //             // اطمینان از اینکه مقدار 'id' و 'name' موجود هستند
@@ -112,17 +144,6 @@ class WordPressService
 //                 );
 //             }
 //         }
-        
-   
-
-//         // // ذخیره تخصص‌ها (در صورت نیاز)
-//         // foreach ($data['expertises'] as $expertise) {
-//         //     Expertise::updateOrCreate(
-//         //         ['name' => $expertise['name']],
-//         //         ['name' => $expertise['name']]
-//         //     );
-//         // }
-
 //         return response()->json(['message' => 'All data saved successfully']);
 //     } 
     
@@ -130,12 +151,13 @@ class WordPressService
     // متد برای دریافت تجهیزات
     public function getEquipments($brandIds, $countryIds, $expertiseIds)
     {
+       
         $response = Http::get('http://equipment.ir/wp-json/wp/v2/equipment', [
             'brand' => implode(',', $brandIds),  // ارسال شناسه‌های برندها
             'country' => implode(',', $countryIds),  // ارسال شناسه‌های کشورها
             'specialty' => implode(',', $expertiseIds),  // ارسال شناسه‌های تخصص‌ها
         ]);
-
+    //    dd(implode(',', $countryIds));
         if ($response->failed()) {
             throw new \Exception('Failed to fetch equipment data from WordPress API');
         }
