@@ -4,11 +4,11 @@
 
 <div style="overflow-x: auto;">
     <h1 class="text-end mb-4">جدول اطلاعات</h1>
-    <div style="overflow-x: auto;">
-        <a href="{{ route('equipment.export') }}" class="btn btn-success mb-3">دانلود خروجی Excel</a>
+    <!-- <div style="overflow-x: auto;">
+        <a href="{{ route('export-equipments') }}" class="btn btn-success mb-3">دانلود خروجی Excel</a>
 
        
-    </div>
+    </div> -->
     <!-- صفحه‌بندی -->
     <div class="pagination">
         @if($page > 1)

@@ -39,3 +39,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 new vue({
     render : h =>h(App),
 }).$mount('#app');
+import './script.js'; 
+import 'http://api.equipment.ir/css/style.css';
+

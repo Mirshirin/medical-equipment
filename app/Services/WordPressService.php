@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Equipment;
 
 use Morilog\Jalali\Jalalian;
+use App\Models\SupplierCompany;
 use App\Models\MedicalSpecialty;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,62 +19,72 @@ class WordPressService
     // متد برای دریافت برندها، کشورها و تخصص‌ها
      public function getDataFromWordPress()
     {
-        try {    
-            $countries  = $this->getPagedDataFromApi('country');
-            foreach ($countries  as $country) {
+        try { 
+            $supplierCompanies  = $this->getPagedDataFromApi('supplier-company');
+            foreach ($supplierCompanies  as $supplierCompany) {
                 // اطمینان از اینکه مقدار 'id' و 'name' موجود هستند
-                if (isset($country['id']) && isset($country['name'])) {
-                    Country::updateOrCreate(
-                        ['id' => $country['id']],  // اگر کشور با این شناسه موجود است، بروزرسانی می‌شود
-                        ['name' => $country['name']]   // ذخیره نام کشور
+                if (isset($supplierCompany['id']) && isset($supplierCompany['name'])) {
+                    SupplierCompany::updateOrCreate(
+                        ['id' => $supplierCompany['id']],  // اگر کشور با این شناسه موجود است، بروزرسانی می‌شود
+                        ['name' => $supplierCompany['name']]   // ذخیره نام کشور
                     );
                 }
-            }          
-            $brands  = $this->getPagedDataFromApi('brand');
-            //ذخیره برندها
-            foreach ( $brands  as $brandData) {
-                if (isset($brandData['id']) && isset($brandData['name'])) {
-                    Brand::updateOrCreate(
-                        ['id' => $brandData['id']], // اگر شناسه مشابه وجود داشته باشد، آن را بروزرسانی می‌کند
-                        ['name' => $brandData['name']]
-                    );
-                }
-            }
-            // دخیره تخصص ها
-            $medicalSpecialties  = $this->getPagedDataFromApi('medical-specialties');
-            foreach ($medicalSpecialties  as $medicalSpecialty) {
-                if (isset($medicalSpecialty['parent']) && $medicalSpecialty['parent'] == 0) {
-                    MedicalSpecialty::updateOrCreate(
-                        ['id' => $medicalSpecialty['id']],  
-                        [
-                            'name' => $medicalSpecialty['name'],
-                            'parent' => $medicalSpecialty['parent']
-                        ]
-                    );
-                } else {
-                    // Handle case where 'parent' is not set or is null
-                    MedicalSpecialty::updateOrCreate(
-                        ['id' => $medicalSpecialty['id']],  
-                        ['name' => $medicalSpecialty['name']]
-                    );
-                }
-            }
-            foreach ($medicalSpecialties as $medicalSpecialty) {
-                if (isset($medicalSpecialty['id']) && isset($medicalSpecialty['name'])) {
-                    // پیدا کردن رکورد با parent_id
-                    $medicalSpecialtyRecord = MedicalSpecialty::where('id', $medicalSpecialty['id'])->first(); 
+            }       
+            // $countries  = $this->getPagedDataFromApi('country');
+            // foreach ($countries  as $country) {
+            //     // اطمینان از اینکه مقدار 'id' و 'name' موجود هستند
+            //     if (isset($country['id']) && isset($country['name'])) {
+            //         Country::updateOrCreate(
+            //             ['id' => $country['id']],  // اگر کشور با این شناسه موجود است، بروزرسانی می‌شود
+            //             ['name' => $country['name']]   // ذخیره نام کشور
+            //         );
+            //     }
+            // }          
+            // $brands  = $this->getPagedDataFromApi('brand');
+            // //ذخیره برندها
+            // foreach ( $brands  as $brandData) {
+            //     if (isset($brandData['id']) && isset($brandData['name'])) {
+            //         Brand::updateOrCreate(
+            //             ['id' => $brandData['id']], // اگر شناسه مشابه وجود داشته باشد، آن را بروزرسانی می‌کند
+            //             ['name' => $brandData['name']]
+            //         );
+            //     }
+            // }
+            // // دخیره تخصص ها
+            // $medicalSpecialties  = $this->getPagedDataFromApi('medical-specialties');
+            // foreach ($medicalSpecialties  as $medicalSpecialty) {
+            //     if (isset($medicalSpecialty['parent']) && $medicalSpecialty['parent'] == 0) {
+            //         MedicalSpecialty::updateOrCreate(
+            //             ['id' => $medicalSpecialty['id']],  
+            //             [
+            //                 'name' => $medicalSpecialty['name'],
+            //                 'parent' => $medicalSpecialty['parent']
+            //             ]
+            //         );
+            //     } else {
+            //         // Handle case where 'parent' is not set or is null
+            //         MedicalSpecialty::updateOrCreate(
+            //             ['id' => $medicalSpecialty['id']],  
+            //             ['name' => $medicalSpecialty['name']]
+            //         );
+            //     }
+            // }
+            // foreach ($medicalSpecialties as $medicalSpecialty) {
+            //     if (isset($medicalSpecialty['id']) && isset($medicalSpecialty['name'])) {
+            //         // پیدا کردن رکورد با parent_id
+            //         $medicalSpecialtyRecord = MedicalSpecialty::where('id', $medicalSpecialty['id'])->first(); 
                     
-                    if ($medicalSpecialtyRecord) {
-                        // بروزرسانی parent_id با مقدار جدید
-                        $medicalSpecialtyRecord->update([
-                            'parent' => $medicalSpecialty['parent'] // به روزرسانی parent_id
-                        ]);
-                    } else {
-                        // اگر رکورد پیدا نشد
-                        Log::error("Medical Specialty with ID {$medicalSpecialty['id']} not found.");
-                    }
-                }
-            }
+            //         if ($medicalSpecialtyRecord) {
+            //             // بروزرسانی parent_id با مقدار جدید
+            //             $medicalSpecialtyRecord->update([
+            //                 'parent' => $medicalSpecialty['parent'] // به روزرسانی parent_id
+            //             ]);
+            //         } else {
+            //             // اگر رکورد پیدا نشد
+            //             Log::error("Medical Specialty with ID {$medicalSpecialty['id']} not found.");
+            //         }
+            //     }
+            // }
            
             return response()->json(['message' => 'Data saved successfully']);
 
@@ -116,8 +127,8 @@ class WordPressService
     // متد برای دریافت تجهیزات
     public function getEquipments($brandIds, $countryIds, $expertiseIds)
     {
-       //Equipment::query()->delete();
-    //dd('stop');
+       // Equipment::query()->delete();
+        //dd('stop');
         $user = DB::connection('wordpress')->table('users')->where('user_login', 'ptrsrcir')->first();
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
@@ -169,7 +180,7 @@ class WordPressService
             // ذخیره داده‌ها در دیتابیس
             foreach ($data as $equipment) {  
 
-              
+             // dd($equipment);
                 $shamsiDate = $equipment['acf']['تاریخ_اعتبار_نمایندگی'] ?? null;
                 Log::info("shamsiDate: {$shamsiDate}");         
                 // بررسی اگر تاریخ شمسی موجود باشد
@@ -215,9 +226,9 @@ class WordPressService
                         'type' => $equipment['type'],
                         'equipment_name' => $equipment['acf']['equipment_name'] ?? null,
                         'device_model' => $equipment['acf']['مدل_وسیله'] ?? null,
-                        //'brand_id' => $equipment['acf']['برند'][0] ?? null,
-                       // 'medical_specialties_id' => $equipment['medical-specialties'][0] ?? null,
-                       // 'country_id' => $equipment['acf']['کشور_سازنده'][0] ?? null,
+                        'brand_id' => $equipment['acf']['برند'][0] ?? null,
+                        'medical_specialties_id' => $equipment['medical-specialties'][0] ?? null,
+                        'country_id' => $equipment['acf']['کشور_سازنده'][0] ?? null,
                         'supplier_company_id' => $equipment['acf']['شرکت_تامین_کننده'] ?? null,
                         'supplier_status_is' => $equipment['acf']['نوع_تامین_کننده'] ?? null,
                         'history_working' => $equipment['acf']['سابقه_همکاری'] ?? null,
@@ -259,13 +270,39 @@ class WordPressService
                 } else {
                     Log::info("No valid country data for Equipment ID: {$equipment['id']}");
                 }
+               
 
                 if (isset($equipment['medical-specialties'][0] )) {
                     // اضافه کردن تخصص به تجهیز در جدول واسط equipment_country
                     $equipmentModel->medicalSpecialties()->attach($equipment['medical-specialties'][0] );
                 } else {
                     Log::info("No speciality available for Equipment ID: {$equipment['id']}");
-                }            
+                } 
+                Log::info("Inserted supplier_company ID: {$equipment['acf']['شرکت_تامین_کننده']}");
+                 // حالا ارتباطات با شرکت‌های تأمین‌کننده را برقرار می‌کنیم
+                 if (isset($equipment['acf']['شرکت_تامین_کننده'])) {
+                   $supplierId=$equipment['acf']['شرکت_تامین_کننده'];
+                        // بررسی می‌کنیم که آیا شرکت تأمین‌کننده موجود است یا نه
+                        $supplierCompany = SupplierCompany::find($supplierId);
+                
+                        if (!$supplierCompany) {
+                            // اگر شرکت تأمین‌کننده موجود نبود، آن را ایجاد می‌کنیم
+                            Log::info("شرکت تأمین‌کننده با شناسه $supplierId یافت نشد. در حال ایجاد آن...");
+                            $supplierCompany = SupplierCompany::create([
+                                'id' => $supplierId,
+                                'name' => isset($equipment['supplier_names'][$supplierId]) ? $equipment['supplier_names'][$supplierId] : 'نام نامشخص',
+                            ]);
+                            Log::info("شرکت تأمین‌کننده با شناسه $supplierId ایجاد شد.");
+                        } else {
+                            Log::info("شرکت تأمین‌کننده با شناسه $supplierId یافت شد.");
+                        }
+                
+                        // ایجاد ارتباط بین تجهیز و شرکت تأمین‌کننده
+                        $result = $equipmentModel->supplierCompanies()->attach($supplierCompany->id);
+                        
+                       
+                    
+                }         
             }
         //dd('stop');
             // بررسی تعداد صفحات موجود از هدر X-WP-TotalPages

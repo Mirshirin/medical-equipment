@@ -20,8 +20,9 @@ class Equipment extends Model
                             'salesman_phone','description'
                         ];
     public $incrementing = false;  // این ویژگی را false قرار می‌دهیم تا از افزایش خودکار شناسه جلوگیری شود.
-    public $timestamps = true;   
-    
+    public $timestamps = true;  
+    protected $hidden = ['created_at', 'updated_at'];
+
     public function brands()
     {
         return $this->belongsToMany(Brand::class, 'equipment_brand', 'equipment_id', 'brand_id');
@@ -39,4 +40,10 @@ class Equipment extends Model
      {
          return $this->belongsToMany(MedicalSpecialty::class, 'equipment_specialty', 'equipment_id', 'specialty_id');
      }
+
+     public function supplierCompanies()
+     {
+         return $this->belongsToMany(SupplierCompany::class, 'equipment_supplier', 'equipment_id', 'supplier_id');
+     }
+
 }

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use App\Models\Equipment;
 use Illuminate\Http\Request;
 use App\Services\WordPressService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
 class WordPressController extends Controller
@@ -25,7 +26,7 @@ class WordPressController extends Controller
             // دریافت داده‌ها از API وردپرس
              $this->wordpressService->getDataFromWordPress();          
 
-            return response()->json(['message' => 'Brands, Countries, and Specialties have been successfully fetched and saved.']);
+            return response()->json(['message' => 'Brands, Countries, and Specialties  and supplier company have been successfully fetched and saved.']);
         } catch (\Exception $e) {
             // در صورت بروز خطا
             return response()->json(['error' => $e->getMessage()], 500);
@@ -65,7 +66,7 @@ class WordPressController extends Controller
             // دریافت تعداد کل تجهیزات برای صفحه‌بندی
             $total = $response->header('X-WP-Total');  // تعداد کل نتایج
             $totalPages = ceil($total / $perPage);  // محاسبه تعداد صفحات
-    
+           // Log::info("Shamsi Date: { $totalPages}");
             // ارسال داده‌ها به نمای Blade همراه با اطلاعات صفحه‌بندی
             return view('specialty.index', compact('equipments', 'totalPages', 'page'));
         } else {

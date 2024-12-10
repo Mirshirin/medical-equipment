@@ -10,7 +10,6 @@ use App\Http\Controllers\WordPressController;
 
 use App\Http\Controllers\SearchController;
 
-Route::get('/search', [SearchController::class, 'search']);
 
 
 Route::middleware(['auth:api'])->get('/user', function (Request $request) {
