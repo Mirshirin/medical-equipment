@@ -1,8 +1,3 @@
-<?php
-//dd( $results);
-
-
-?>
 <!DOCTYPE html>
 <html lang="en" >
 <head>
@@ -18,34 +13,55 @@
 </head>
 <body>
 
+
+@if(session('error'))
+    <div class="alert alert-primary d-flex justify-content-center" role="alert">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+    </svg>
+    <div class="text-center">
+    {{ session('error') }}
+    </div>
+    </div>
+@endif
+@if(session('success'))
+<div class="alert alert-primary d-flex justify-content-center" role="alert">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+    </svg>
+    <div class="text-center">
+    {{ session('success') }}
+    </div>
+    </div>
+@endif
 <!-- partial:index.partial.html -->
 <form action="{{ url('/search') }}" method="GET" id="header-search-people" class="form-area" novalidate="novalidate" autocomplete="off">
 @csrf  
 <div class="row">
       <div class="col-md-10">
           <div class="styled-input wide multi">
-              <div class="first-name" id="input-first-name">
-                    
-                  <input type="text" name="equipment_name" id="fn" value="{{ request('equipment_name') }}" autocomplete="off" data-placeholder-focus="false" required />
-                  <label> نام وسیله</label>
-                  <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-                          <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
-                              <polyline id="Path-2" points="257 754.064225 263.505943 760.733489 273.634603 748"></polyline>
-                          </g>
-                      </g>
-                  </svg>
-                  <svg class="icon--error" width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-                          <g id="UI-Elements-Forms" transform="translate(-550.000000, -747.000000)" fill-rule="nonzero" stroke="#D0021B" stroke-width="3">
-                              <g id="Group" transform="translate(552.000000, 749.000000)">
-                                  <path d="M0,11.1298982 L11.1298982,-5.68434189e-14" id="Path-2-Copy"></path>
-                                  <path d="M0,11.1298982 L11.1298982,-5.68434189e-14" id="Path-2-Copy-2" transform="translate(5.564949, 5.564949) scale(-1, 1) translate(-5.564949, -5.564949) "></path>
+
+              <div class="equipment_name" id="select-state">
+                  <select name="equipment_name">
+                      <option value="All">All</option>
+                        @foreach($devicenames as $devicename)
+                        <option value="{{ $devicename->id }}" {{ request('equipment_name') == $devicename->id ? 'selected' : '' }}>{{ $devicename->name }}</option>
+                        @endforeach    
+                  </select>
+                  <label>نام وسیله </label>
+                  <svg class="chevron-down" width="17px" height="10px" viewBox="0 0 17 10" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink">
+                      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <g id="UI-Elements-Forms" transform="translate(-840.000000, -753.000000)" stroke="#4A4A4A" stroke-width="0.9">
+                              <g id="Done-Copy-2" transform="translate(622.000000, 727.000000)">
+                                  <polyline id="Rectangle-16" transform="translate(226.400000, 27.400000) rotate(-45.000000) translate(-226.400000, -27.400000) "
+                                      points="231.8 32.8 221 32.8 221 22"></polyline>
                               </g>
                           </g>
                       </g>
                   </svg>
-              </div>
+              </div>  
+                  
               <div class="last-name" id="input-last-name">
                   <input type="text" name="device_model" id="ln" value="{{ request('device_model') }}" autocomplete="off" data-placeholder-focus="false" required />
                   <label>مدل وسیله</label>
@@ -110,7 +126,7 @@
                     <option value="فروشنده" {{ request('supplier_status_is') == 'فروشنده' ? 'selected' : '' }}>فروشنده</option>
                 </select>
     
-                  <label>  تامین کننده </label>
+                  <label>  نوع تامین کننده  </label>
                   <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
                           <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
@@ -129,9 +145,15 @@
                       </g>
                   </svg>
               </div>
-              <div class="last-name" id="input-last-name">
-                  <input type="text" name="status" id="ln" value="{{ request('status') }}" autocomplete="off" data-placeholder-focus="false" required />
-                  <label>وضعیت </label>
+             
+              <div class="first-name" id="input-first-name">  
+              <select name="history_working" id="history_working">
+                    <option value="All" {{ request('history_working') == 'All' ? 'selected' : '' }}>All</option>
+                    <option value="ندارد" {{ request('history_working') == 'ندارد' ? 'selected' : '' }}>ندارد</option>
+                    <option value="دارد" {{ request('history_working') == 'دارد' ? 'selected' : '' }}>دارد</option>                    
+                </select>
+    
+                  <label>  سابقه همکاری   </label>
                   <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
                           <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
@@ -150,28 +172,7 @@
                       </g>
                   </svg>
               </div>
-              <div class="city" id="input-city">
-                  <input type="text" name="history_working" id="city"  value="{{ request('history_working') }}" autocomplete="off" data-placeholder-focus="false" />
-                  <label>سابقه همکاری</label>
-                  <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-                          <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
-                              <polyline id="Path-2" points="257 754.064225 263.505943 760.733489 273.634603 748"></polyline>
-                          </g>
-                      </g>
-                  </svg>
-                  <svg class="icon--error" width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-                          <g id="UI-Elements-Forms" transform="translate(-550.000000, -747.000000)" fill-rule="nonzero" stroke="#D0021B" stroke-width="3">
-                              <g id="Group" transform="translate(552.000000, 749.000000)">
-                                  <path d="M0,11.1298982 L11.1298982,-5.68434189e-14" id="Path-2-Copy"></path>
-                                  <path d="M0,11.1298982 L11.1298982,-5.68434189e-14" id="Path-2-Copy-2" transform="translate(5.564949, 5.564949) scale(-1, 1) translate(-5.564949, -5.564949) "></path>
-                              </g>
-                          </g>
-                      </g>
-                  </svg>
-              </div>
-            
+             
               <div class="city" id="input-city">
                   <input type="text" name="query_price" id="city"  value="{{ request('query_price') }}" autocomplete="off" data-placeholder-focus="false" />
                   <label>قیمت استعلامی</label>
@@ -229,6 +230,7 @@
               <div class="first-name" id="input-first-name">                    
                   <input type="date" name="query_date" id="date" value="{{ request('query_date') }}" autocomplete="off" data-placeholder-focus="false" required />
                   <label> تاریخ استعلام</label>
+                 
                   <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
                           <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
@@ -236,6 +238,7 @@
                           </g>
                       </g>
                   </svg>
+                  
                   <svg class="icon--error" width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
                           <g id="UI-Elements-Forms" transform="translate(-550.000000, -747.000000)" fill-rule="nonzero" stroke="#D0021B" stroke-width="3">
@@ -343,7 +346,7 @@
               <div class="first-name" id="input-first-name">
                     
                   <input type="text" name="salesman_phone" id="fn"  value="{{ request('salesman_phone') }}" autocomplete="off" data-placeholder-focus="false" required />
-                  <label> تلفن همراه</label>
+                  <label>  تلفن همراه نماینده </label>
                   <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
                           <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
@@ -383,9 +386,34 @@
                       </g>
                   </svg>
               </div>
+
               <div class="city" id="input-city">
+
                   <input type="date" name="certificate_date" id="date" value="{{ request('certificate_date') }}" autocomplete="off" data-placeholder-focus="false" />
                   <label> تاریخ اعتبار نمایندگی  </label>
+
+                   
+                  
+                  <svg class="icon--error" width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+                          <g id="UI-Elements-Forms" transform="translate(-550.000000, -747.000000)" fill-rule="nonzero" stroke="#D0021B" stroke-width="3">
+                              <g id="Group" transform="translate(552.000000, 749.000000)">
+                                  <path d="M0,11.1298982 L11.1298982,-5.68434189e-14" id="Path-2-Copy"></path>
+                                  <path d="M0,11.1298982 L11.1298982,-5.68434189e-14" id="Path-2-Copy-2" transform="translate(5.564949, 5.564949) scale(-1, 1) translate(-5.564949, -5.564949) "></path>
+                              </g>
+                          </g>
+                      </g>
+                  </svg>
+
+              </div>
+                <div class="city" id="input-city">    
+             
+                    <select name="comparison" id="comparison">                        
+                        <option value="greater_than_or_equal" {{ request('comparison') == 'greater_than_or_equal' ? 'selected' : '' }}>>=</option>
+                        <option value="equal" {{ request('comparison') == 'equal' ? 'selected' : '' }}>==</option>
+                        <option value="less_than_or_equal" {{ request('comparison') == 'less_than_or_equal' || !request('comparison') ? 'selected' : '' }}> <= </option>
+                    </select>
+
                   <svg class="icon--check" width="21px" height="17px" viewBox="0 0 21 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
                           <g id="UI-Elements-Forms" transform="translate(-255.000000, -746.000000)" fill-rule="nonzero" stroke="#81B44C" stroke-width="3">
@@ -403,7 +431,7 @@
                           </g>
                       </g>
                   </svg>
-              </div>
+              </div>      
              
               
               <div class="state" id="select-state">
@@ -463,7 +491,13 @@
                         <td data-label="Posted">{{ $data['status'] }}</td>
                         <td data-label="Posted">{{ $data['date'] }}</td>
                         <td data-label="Posted">{{ $data['type'] }}</td>
-                        <td data-label="Posted">{{ $data['equipment_name'] }}</td>
+                        <td data-label="Posted">
+                             @if($data->devices->isEmpty())
+                                N/A
+                            @else
+                                {{ implode(', ',$data->devices->pluck('name')->toArray()) }}
+                            @endif
+                        </td>
                         <td data-label="Posted">{{ $data['device_model'] }}</td>
                         <td data-label="Posted">
                             @if($data->brands->isEmpty())

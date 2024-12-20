@@ -6,6 +6,8 @@ use GuzzleHttp\Client;
 use App\Models\Equipment;
 use Illuminate\Http\Request;
 use App\Services\WordPressService;
+use Illuminate\Support\Facades\DB;
+use App\Jobs\FetchEquipmentDataJob;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -26,26 +28,57 @@ class WordPressController extends Controller
             // دریافت داده‌ها از API وردپرس
              $this->wordpressService->getDataFromWordPress();          
 
-            return response()->json(['message' => 'Brands, Countries, and Specialties  and supplier company have been successfully fetched and saved.']);
+            return response()->json(['message' => 'Brands, Countries, Specialties , supplier companies and devices have been successfully fetched and saved.']);
         } catch (\Exception $e) {
             // در صورت بروز خطا
             return response()->json(['error' => $e->getMessage()], 500);
         }    }
 
     // متد برای دریافت تجهیزات براساس برندها، کشورها و تخصص‌ها
+    // public function getEquipments()
+    // {
+    //     // فرض کنید شناسه‌های برندها، کشورها و تخصص‌ها را از دیتابیس دریافت می‌کنید
+    //    // $brandIds = \App\Models\Brand::pluck('id')->toArray();
+    //     //$countryIds = \App\Models\Country::pluck('id')->toArray();
+    //    // $expertiseIds =  \App\Models\MedicalSpecialty::pluck('id')->toArray();
+       
+    //     // دریافت تجهیزات از API
+    //     //$this->wordpressService->getEquipments($brandIds, $countryIds, $expertiseIds);
+    //     $this->wordpressService->getEquipments();
+    //     // انتقال داده‌ها به Elasticsearch
+    //     //          $this->indexDataInElasticsearch();
+    //     return response()->json(['message' => 'equipments have been successfully fetched and saved.']);
+
+    // }
     public function getEquipments()
     {
-        // فرض کنید شناسه‌های برندها، کشورها و تخصص‌ها را از دیتابیس دریافت می‌کنید
-        $brandIds = \App\Models\Brand::pluck('id')->toArray();
-        $countryIds = \App\Models\Country::pluck('id')->toArray();
-        $expertiseIds =  \App\Models\MedicalSpecialty::pluck('id')->toArray();
-       
-        // دریافت تجهیزات از API
-        $this->wordpressService->getEquipments($brandIds, $countryIds, $expertiseIds);
-         // انتقال داده‌ها به Elasticsearch
-        //          $this->indexDataInElasticsearch();
-        return response()->json(['message' => 'equipments have been successfully fetched and saved.']);
+      // Equipment::query()->delete();
+       // dd('stop');
+        $user = DB::connection('wordpress')->table('users')->where('user_login', 'ptrsrcir')->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
 
+        $client = new Client();
+        $response = $client->post('http://equipment.ir/wp-json/jwt-auth/v1/token', [
+            'json' => [
+                'username' => $user->user_login,
+                'password' => 'PtRrRc#!$03#',
+            ]
+        ]);
+
+        $responseBody = json_decode($response->getBody()->getContents());
+
+        if (isset($responseBody->token)) {
+            $jwtToken = $responseBody->token;  // دریافت توکن JWT
+            // ارسال Job به Queue برای پردازش داده‌ها
+            //dd( $jwtToken);
+            FetchEquipmentDataJob::dispatch($jwtToken);
+           
+            return response()->json(['message' => 'Fetching equipment data has been queued.']);
+        } else {
+            return response()->json(['error' => 'Failed to retrieve JWT token'], 500);
+        }
     }
     public function getEquipment(Request $request, $page = 1)
     {

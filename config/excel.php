@@ -5,7 +5,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv;
 
 return [
     'exports' => [
-
+        'disk' => 'local', // از دیسک محلی استفاده می‌شود
+        'store' => 'exports', // پوشه‌ای که فایل‌ها ذخیره خواهند شد
         /*
         |--------------------------------------------------------------------------
         | Chunk size

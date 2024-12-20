@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('equipment_brand', function (Blueprint $table) {
+        Schema::create('devices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('equipment_id')->constrained()->onDelete('cascade');
-            $table->string('brand_id'); // توجه: اینجا از string استفاده می‌کنیم چون شناسه برند از API به عنوان string است
+            $table->string('name'); // نام ترم
             $table->timestamps();
         });
     }
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('equipment_brand');
+        Schema::dropIfExists('devices');
     }
 };

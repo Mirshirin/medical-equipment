@@ -28,7 +28,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/search';
 
     /**
      * Create a new controller instance.
@@ -42,6 +42,7 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
+        dd('1');
         // اعتبارسنجی اطلاعات ورود
         $credentials = $request->only('email', 'password');
        
@@ -56,11 +57,12 @@ class LoginController extends Controller
                 ['user_email' => $wordpressUser->user_email],
                 ['user_login' => $wordpressUser->display_name]
             );
-             //  dd( $user);
+            //  dd( $user);
             // ورود به سیستم لاراول
-            Auth::login($user);
+           // Auth::login($user);
+            //Auth::logout();
 
-            return redirect()->intended('home'); // هدایت به صفحه بعد از ورود موفق
+            return redirect()->intended('login'); // هدایت به صفحه بعد از ورود موفق
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);

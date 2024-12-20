@@ -8,7 +8,8 @@ define('LARAVEL_START', microtime(true));
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
-
+set_time_limit(600);
+ini_set('memory_limit', '2024M');
 // Register the Composer autoloader...
 require __DIR__.'/../vendor/autoload.php';
 

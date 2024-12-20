@@ -45,5 +45,14 @@ class Equipment extends Model
      {
          return $this->belongsToMany(SupplierCompany::class, 'equipment_supplier', 'equipment_id', 'supplier_id');
      }
-
+     public function devices()
+     {
+         return $this->belongsToMany(Device::class, 'equipment_device', 'equipment_id', 'device_id');
+ 
+     }
+      // رابطه به مدل EquipmentDevice
+    public function equipmentDevices()
+    {
+        return $this->hasMany(EquipmentDevice::class, 'equipment_id');
+    }
 }
